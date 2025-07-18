@@ -1,10 +1,12 @@
 package com.martin.journal.controller;
 
 import com.martin.journal.entity.JournalEntry;
+import com.martin.journal.exception.JournalEntryNotFoundException;
 import com.martin.journal.service.JournalEntryService;
 import org.bson.types.ObjectId;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.RequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,10 +23,10 @@ public class JournalEntryController {
     public ResponseEntity<?> createEntry(@RequestBody JournalEntry myEntry){
         try {
             journalEntryService.createEntry(myEntry);
-            return new ResponseEntity<String>("Journal created", HttpStatus.CREATED);
+            return ResponseEntity.accepted().build();
         }
         catch (Exception e){
-            return new ResponseEntity<>(e.toString(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -35,37 +37,49 @@ public class JournalEntryController {
             return new ResponseEntity<List<JournalEntry>>(allJournalEntries, HttpStatus.CREATED);
         }
         catch (Exception e){
-            return new ResponseEntity<>(e.toString(), HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().build();
         }
     }
 
+
     @GetMapping("/id/{journalEntryId}")
-    public ResponseEntity<?> getJournalEntryById(@PathVariable String journalEntryId){
+    public ResponseEntity<?> getJournalEntryById(@PathVariable String journalEntryId) {
         try {
-            ObjectId journalEntryObjectId = new ObjectId(journalEntryId);
-            JournalEntry journalEntry = journalEntryService.getJournalEntryById(journalEntryObjectId).orElse(null);
-            return new ResponseEntity<>(journalEntry, HttpStatus.OK);
+            JournalEntry journalEntry = journalEntryService.getJournalEntryById(new ObjectId(journalEntryId));
+            return ResponseEntity.ok(journalEntry);
+        }catch (JournalEntryNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
-        catch (Exception e){
-            return new ResponseEntity<>(e.toString(), HttpStatus.BAD_REQUEST);
+        catch (Exception e) {
+            return ResponseEntity.badRequest().build();
         }
     }
 
     @PutMapping("/id/{journalEntryId}")
-    public void updateJournalEntryById(@PathVariable String journalEntryId, @RequestBody JournalEntry newJournalEntry){
+    public ResponseEntity<?> updateJournalEntryById(@PathVariable String journalEntryId, @RequestBody JournalEntry newJournalEntry){
         try {
-            ObjectId journalEntryObjectId = new ObjectId(journalEntryId);
-            journalEntryService.updateJournalEntryById(journalEntryObjectId, newJournalEntry);
-
+            journalEntryService.updateJournalEntryById(new ObjectId(journalEntryId), newJournalEntry);
+            return ResponseEntity.accepted().build();
+        }
+        catch (JournalEntryNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
         catch (Exception e){
-
+            return ResponseEntity.badRequest().build();
         }
     }
 
     @DeleteMapping("/id/{journalEntryId}")
-    public void deleteJournalEntryById(@PathVariable String journalEntryId){
-        ObjectId journalEntryObjectId = new ObjectId(journalEntryId);
-        journalEntryService.deleteJournalEntryById(journalEntryObjectId);
+    public ResponseEntity<?> deleteJournalEntryById(@PathVariable String journalEntryId){
+        try {
+            journalEntryService.deleteJournalEntryById(new ObjectId(journalEntryId));
+            return ResponseEntity.accepted().build();
+        }
+        catch (JournalEntryNotFoundException e){
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
+        catch (Exception e){
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
