@@ -19,7 +19,6 @@ import java.util.List;
 @NoArgsConstructor
 public class User {
     @Id
-    @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId id;
     @NonNull
     @Indexed(unique = true)

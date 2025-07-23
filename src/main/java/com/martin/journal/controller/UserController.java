@@ -16,7 +16,7 @@ public class UserController {
     public UserService userService;
 
     @PostMapping()
-    public ResponseEntity<?> createUser(@RequestBody User newUser){
+    public ResponseEntity<?> saveUser(@RequestBody User newUser){
         try {
             userService.saveUser(newUser);
             return ResponseEntity.accepted().build();
@@ -29,7 +29,7 @@ public class UserController {
     @GetMapping()
     public ResponseEntity<?> getAllUsers(){
         try {
-            List<User> allUsers = userService.getAllUsers();
+            List<User> allUsers = userService.findAllUsers();
             return new ResponseEntity<List<User>>(allUsers,HttpStatus.OK);
         }
         catch (Exception e){
