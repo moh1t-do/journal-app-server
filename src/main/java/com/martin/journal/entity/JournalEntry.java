@@ -16,7 +16,6 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class JournalEntry {
     @Id
-    @JsonSerialize(using = ToStringSerializer.class)
     private ObjectId id;
     @NonNull
     private String title;
