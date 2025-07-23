@@ -5,7 +5,6 @@ import com.martin.journal.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -13,11 +12,15 @@ public class UserService {
     @Autowired
     public UserRepository userRepository;
 
-    public void createUser(User newUser){
+    public void saveUser(User newUser){
         userRepository.save(newUser);
     }
 
     public List<User> getAllUsers(){
         return userRepository.findAll();
+    }
+
+    public User findByUsername(String username){
+        return userRepository.findbyUsername(username);
     }
 }

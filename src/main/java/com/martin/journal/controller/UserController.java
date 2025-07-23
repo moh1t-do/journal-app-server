@@ -18,7 +18,7 @@ public class UserController {
     @PostMapping()
     public ResponseEntity<?> createUser(@RequestBody User newUser){
         try {
-            userService.createUser(newUser);
+            userService.saveUser(newUser);
             return ResponseEntity.accepted().build();
         }
         catch (Exception e){
@@ -35,5 +35,16 @@ public class UserController {
         catch (Exception e){
             return ResponseEntity.badRequest().build();
         }
+    }
+
+    @PutMapping()
+    public ResponseEntity<Object> updateUser(@RequestBody User user){
+        User userInDb = userService.findByUsername(user.getUsername());
+        if (userInDb != null){
+            userInDb.setUsername(user.getUsername());
+            userInDb.setPassword(user.getPassword());
+            userService.saveUser(userInDb);
+        }
+        return ResponseEntity.noContent().build();
     }
 }
